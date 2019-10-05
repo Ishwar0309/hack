@@ -1,0 +1,29 @@
+
+<br>
+<br>
+<br>
+<br>
+
+    {% if msg %}
+        {{msg}}
+    {%endif%}
+    <form action="/postsignIn/" method="post">
+        {% csrf_token %}
+        Email:
+        <input type="email" name="email"><br>
+        Password:
+        <input type="password" name="pass"><br>
+        Login As: <br>
+
+        <select name="drop">
+          <option value="Farmer" >Farmer</option>
+          <option value="Processor" >Processor</option>
+          <option value="Logistics" >Logistics</option>
+          <option value="Quality Checker" >Quality Checker</option>
+          <option value="Retailer" >Retailer</option>
+          <option value="Customer" >Customer</option>
+        </select>
+        <input type="submit" value="Sign In">
+    </form>
+    <a href="{% url 'user-signup'%}" ><button class="btn btn-primary">Sign Up</button> </a>
+

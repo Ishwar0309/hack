@@ -1,0 +1,33 @@
+{% extends "user/home.html" %}
+{% block content %}
+<br>
+<br>
+
+<br>
+<br>
+<br>
+
+
+
+
+    <form action="/postsignUp/" method="post">
+        {% csrf_token %}
+        Name:
+        <input  name="name"><br>
+
+        Email:
+        <input type="email" name="email"><br>
+        Password:
+        <input type="password" name="pass"><br>
+        <select name="drop">
+          <option value="Farmer" >Farmer</option>
+          <option value="Processor" >Processor</option>
+          <option value="Logistics" >Logistics</option>
+          <option value="Quality Checker" >Quality Checker</option>
+          <option value="Retailer" >Retailer</option>
+          <option value="Customer" >Customer</option>
+        </select>
+        <input type="submit" value="Sign Up">
+    </form>
+
+{% endblock content %}
