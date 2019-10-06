@@ -1,13 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+	<!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>-->
+    <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </head>
+<style type="text/css">
+  #box {
+  padding:5px;
+  width:200px;
+  z-index:10;
+  position:relative;
+}
+#box form {
+ background:#006699;
+ padding:5px;
+<!-- display:none;-->
+ position:absolute;
+ top:27px;
+}
+#button {
+  width:75px;
+  background:#006699;
+  color:#fff;
+  padding:3px 10px;
+  border:1px solid #006699;
+  margin-bottom:15px;
+  cursor:pointer;
+}
+</style>
+<script>
+    $(document).ready(function () {
+    	$("#button").click(function() {
+            $("#box form").toggle("slow");
+            return false;
+        });
+    });
+</script>
 <body>
+    <div id="box">
+        <span id="button">Requests</span>
+        {% csrf_token %}
+        {% for dat in data %}
+        <div class="card bg-success text-white">
+            <form action="{% url 'retailer' %}" method="POST" id="form">
+                {% csrf_token %}
+                <div class="card-body">
+                    <p>Product : {{dat.productName}}</p>
+                    <p>Price : {{dat.Price}}</p>
+                    <p>Available: {{dat.availableQuantity}}</p>
+                    <input type="text" name="requiredQuantity" placeholder="Quantity Required">
+                    <input type="hidden" name="lotKey" value="{{dat.lotKey}}">
+                    <input type="hidden" name="productName" value="{{dat.productName}}">
+                    <input type="hidden" name="productKey" value="{{dat.productKey}}">
+                    <input type="hidden" name="processorKey" value="{{dat.processorKey}}">
+                    <input type="hidden" name="quantity" value="{{dat.quantity}}">
+                    <input type="hidden" name="Price" value="{{dat.Price}}">
+    <!--                <input type="hidden" name="farmerLotKey" value="{{dat.farmerLotKey}}">-->
+                  <button type="submit" name="accept" value="acceptButton" class="btn btn-warning">Accept</button>
+                </div>
+            </form>
+        </div>
+        {% endfor %}
 
-     Welcome Retailer {{name}}
-    <br>
-    email is {{email}}
+    </div>
 </body>
 </html>

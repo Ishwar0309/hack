@@ -1,3 +1,4 @@
+from django.core.mail.backends import console
 from django.shortcuts import render
 import pyrebase
 from django.contrib import  auth as authe
@@ -20,6 +21,7 @@ firebaseConfig = {
 firebase =pyrebase.initialize_app(firebaseConfig)
 database = firebase.database()
 auth = firebase.auth()
+
 def farmer(request):
     sess = request.session['uid']
     data = database.child("user").child("Farmer").child('yields').child(sess).get()
@@ -41,7 +43,7 @@ def farmer(request):
                 val.update(dict1)
                 results.append(val)
     #print(results)
-    print("results:",results)
+    print("results:", results)
 
     if request.method == 'POST':
         if "broadcast" in request.POST:
@@ -71,7 +73,6 @@ def farmer(request):
     return render(request,'user/farmer.html',{'data':temp,'results':results})
 
 
-
 def qualityChecker(request):
     result=[]
     resultData = database.child("user").child("Quality Checker").child("0zGbx6o6oiWIqqABxfy5Qxo07kh2").child("check").get()
@@ -87,11 +88,8 @@ def qualityChecker(request):
             if(i.key()==value['farmerKey']):
                    
 
-                
                 userLotCheck = database.child("user").child("Processor").child("interests").child(value['processorKey']).get()  
 
-
-                
                 for j in userLotCheck.each():
                     #print(j.key())
                     #print(value['interestKey'])
@@ -104,11 +102,7 @@ def qualityChecker(request):
                         print("2:::::::",dict2) 
                         dict1.update(dict2)
                         print("com:::::::",dict1)
-                        result.append(dict1)  
-
-                      
-
-    
+                        result.append(dict1)
 
     return render(request, 'user/qualityChecker.html',{'data':result})
 
@@ -116,8 +110,8 @@ def qualityChecker(request):
 def processor(request):
     data = database.child("user").child("Farmer").child('yields').get()
     temp = []
-    sess = request.session['uid']
-    processorId = sess
+    processorId = request.session['uid']
+
     for entry in data.each():
         dict = {'farmerKey':entry.key()}
 
@@ -128,7 +122,7 @@ def processor(request):
             val.update(dict)
             val.update(dict1)
             temp.append(val)
-    if request.method=='POST':
+    if request.method == 'POST':
         print(request.POST)
         if "acceptButton" in request.POST:
             print('accept hua')
@@ -142,14 +136,62 @@ def processor(request):
                 'quality': "N"
             }
             database.child("user").child("Processor").child('interests').child(processorId).push(data)
-        
 
-    return render(request, 'user/processor.html',{'data':temp})
-def singIn(request):
-    # if method == 'POST':
+    # Broadcast for processor
+    data = database.child("user").child("Processor").child("Confirmed Farmer Orders").child(processorId).get()
+    lots =[]
+    for lotKey in data.each():
+        lots.append(lotKey.key())
+    print(lots)
+    if request.method == "POST":
+        if "broadcast" in request.POST:
+            product = {
+                'lotKey': request.POST['dropdown'],
+                'productName': request.POST.get('productName'),
+                'quantity': int(request.POST.get('quantity')),
+                'Price': int(request.POST.get('Price')),
+                'timestamp': datetime.now().strftime("%d-%b-%Y (%H:%M:%S.%f)"),
+                'availableQuantity' : int(request.POST.get('quantity'))
+            }
+            database.child("user").child("Processor").child('products').child(processorId).push(product)
 
+    return render(request, 'user/processor.html',{'data':temp , 'lots' : lots} )
+
+def retailer(request):
+    data = database.child("user").child("Processor").child('products').get()
+    productDetails = []
+    retailerId = request.session['uid']
+    for entry in data.each():
+        processor = {'processorKey': entry.key()}
+        product = entry.val()
+        for key,value in product.items():
+            dict = {"productKey" : key}
+            details = value
+            details.update(dict)
+            details.update(processor)
+            productDetails.append(details)
+    print(productDetails)
+
+    if request.method == "POST":
+        if "accept" in request.POST:
+            transaction = {
+                # 'lotKey': request.POST.get('lotKey'),
+                'productName': request.POST.get('productName'),
+                'requiredQuantity': int(request.POST.get('requiredQuantity')),
+                'Price': int(request.POST.get('Price')),
+                'timestamp': datetime.now().strftime("%d-%b-%Y (%H:%M:%S.%f)"),
+                'processorKey' : request.POST.get('processorKey'),
+                'productKey': request.POST.get('productKey'),
+                'reportAdded' : 0,
+                'lotKey' : request.POST.get('lotKey')
+            }
+            processorKey = request.POST.get('processorKey')
+            database.child("user").child("Retailer").child('Confirmed Processor Orders').child(retailerId).push(transaction)
+            # availableQuantity = database.child("user").child("Processor").child("products")
+    return render(request , 'user/retailer.html' , {'data' : productDetails})
+
+def signIn(request):
     return render(request, 'user/signIn.html')
-
 
 def postsign(request):
     email=request.POST.get('email')
@@ -161,7 +203,7 @@ def postsign(request):
         return render(request,"user/signIn.html",{"msg":message})
 
     session_id = user['localId']
-    request.session['uid']=str(session_id)
+    request.session['uid'] = str(session_id)
     #print(user)
     stake = request.POST['drop']
 
@@ -175,17 +217,15 @@ def postsign(request):
     if stake=="Farmer":
         return redirect("/farmer/")
     if stake=="Customer":
-        return render(request,"user/customer.html",context)
+        return redirect("/customer/")
     if stake=="Logistics":
-        return render(request,"user/logistic.html",context)
+        return redirect("/logistics/")
     if stake=="Retailer":
-        return render(request,"user/retailer.html",context)
+        return redirect("/retailer/")
     if stake=="Processor":
         return redirect("/processor/")
     if stake=="Quality Checker":
         return redirect("/qualityChecker/")
-
-
 
 
 def signUp(request):
@@ -204,14 +244,10 @@ def postsignUp(request):
         'name':name,
         'email':email,
     }
-
     database.child("user").child(stake).child(id).child('details').set(data)
-
-
     return render(request,"user/signIn.html")
 
 def logout(request):
-
     authe.logout(request)
     return render(request, 'user/signIn.html')
 

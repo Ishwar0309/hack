@@ -102,20 +102,26 @@ input[type="submit"] {
 
 <div id="box">
      <span id="button">Broadcast</span>
-    <form action="{% url 'farmer' %}" method="POST" id="form" name="form">
+    <form action="{% url 'processor' %}" method="POST" id="processorForm" name="processorForm">
         {% csrf_token %}
       <!--<p><input type="text" placeholder="username"/></p>-->
       <!--<p><input type="password" placeholder="password" /></p>-->
       <!--<p><input type="submit" value="Sign in" /></p>-->
-        <input type="text" name = "farmerId" placeholder="Farmer Id"/>
-        <input type="text" name = "cropName" placeholder="Crop Name"/>
+        <select name="dropdown">
+            {% for lotKey in lots %}
+                <option value="{{lotKey}}">{{lotKey}}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="LotKey">
+
+        <input type="text" name = "productName" placeholder="Product Name"/>
         <input type="text" name = "quantity" placeholder="Quantity"/>
-        <input type="text" name = "expectedPrice" placeholder="Expected Price"/>
-        <button type="submit">Submit Details!!</button>
+        <input type="text" name = "Price" placeholder="Price for each unit"/>
+        <button type="submit" name="broadcast">Submit Details!!</button>
     </form>
 </div>
 <br><br><br><br><br><br><br><br><br><br><br>
-<div>
+<div id="box1">
      <span id="button1">Requests</span>
 
         {% csrf_token %}
@@ -129,7 +135,7 @@ input[type="submit"] {
                 <p>{{dat.cropName}}</p>
                 <p>{{dat.farmerId}}</p>
 
-                Available: <p>{{dat.quantity}}</p>
+                <p>Available: {{dat.quantity}}</p>
                 <p>{{dat.expectedPrice}}</p>
                 <input type="text" name="requiredQuantity" placeholder="Quantity Required">
                 <input type="text" name="quotedPrice" placeholder="Price Quoted">
