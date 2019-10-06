@@ -10,4 +10,5 @@ urlpatterns = [
     path('postsignUp/',views.postsignUp,name='user-postsignUp'),
     path('farmer/',views.farmer,name='farmer'),
     path('processor/',views.processor,name='processor'),
+    path('qualityChecker/',views.qualityChecker,name='qualityChecker'),
 ]

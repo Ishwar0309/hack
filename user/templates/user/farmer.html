@@ -138,7 +138,7 @@ input[type="submit"] {
         <input type="text" name = "cropName" placeholder="Crop Name"/>
         <input type="text" name = "quantity" placeholder="Quantity"/>
         <input type="text" name = "expectedPrice" placeholder="Expected Price"/>
-        <button type="submit">Submit Details!!</button>
+        <button type="submit" name="broadcast">Submit Details!!</button>
     </form>
 </div>
 <br><br><br><br><br><br><br><br><br><br><br>
@@ -221,6 +221,8 @@ input[type="submit"] {
                 <input type="hidden" name="farmerId" value="{{dat.farmerId}}">
                 <input type="hidden" name="quantity" value="{{dat.quantity}}">
                 <input type="hidden" name="expectedPrice" value="{{dat.expectedPrice}}">
+                <input type="hidden" name="processorKey" value="{{dat.processorKey}}">
+                <input type="hidden" name="selfKey" value="{{dat.selfKey}}">
     	      <button type="submit" name="insurance" value="insurance" class="btn btn-warning" >Send To Insure</button>
     	      <!--<button type="submit" name="acceptButton" value="accept" class="btn btn-warning" >Accept</button>-->
                 <!--<a href="{% url 'processor' %}" class="btn btn-primary stretched-link">Accept</a>-->

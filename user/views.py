@@ -34,32 +34,99 @@ def farmer(request):
         for key,values in value.items():
             if values['farmerKey'] == sess:
                 dict = {'processorKey':entry.key()}
+                dict1 = {'selfKey':key}
+                #print(key)
                 val = values
                 val.update(dict)
+                val.update(dict1)
                 results.append(val)
-    print(results)
+    #print(results)
+    print("results:",results)
 
     if request.method == 'POST':
-        temp = {
-        'farmerId' : request.POST.get('farmerId'),
-        'cropName' : request.POST.get('cropName'),
-        'quantity' : int(request.POST.get('quantity')),
-        'expectedPrice' : int(request.POST.get('expectedPrice')),
-        'timestamp': datetime.now().strftime("%d-%b-%Y (%H:%M:%S.%f)")
-        }
-        database.child("user").child("Farmer").child('yields').child(sess).push(temp)
+        if "broadcast" in request.POST:
+            temp = {
+                'farmerId' : request.POST.get('farmerId'),
+                'cropName' : request.POST.get('cropName'),
+                'quantity' : int(request.POST.get('quantity')),
+                'expectedPrice' : int(request.POST.get('expectedPrice')),
+                'timestamp': datetime.now().strftime("%d-%b-%Y (%H:%M:%S.%f)")
+            }
+            database.child("user").child("Farmer").child('yields').child(sess).push(temp)
+        if "insurance" in request.POST:
+                print("insure")
+
+                temp ={
+                    'processorKey': request.POST.get('processorKey'),
+                    'farmerKey': request.POST.get('farmerKey'),
+                    'interestKey':request.POST.get('selfKey'),
+
+                }
+
+                database.child("user").child("Quality Checker").child("0zGbx6o6oiWIqqABxfy5Qxo07kh2").child("check").push(temp)
+
+
+
+    
     return render(request,'user/farmer.html',{'data':temp,'results':results})
+
+
+
+def qualityChecker(request):
+    result=[]
+    resultData = database.child("user").child("Quality Checker").child("0zGbx6o6oiWIqqABxfy5Qxo07kh2").child("check").get()
+    for check in resultData.each():
+        value=check.val()
+        
+        
+        
+        user = database.child("user").child("Farmer").get()
+      
+        for i in user.each():
+            dict1={}
+            if(i.key()==value['farmerKey']):
+                   
+
+                
+                userLotCheck = database.child("user").child("Processor").child("interests").child(value['processorKey']).get()  
+
+
+                
+                for j in userLotCheck.each():
+                    #print(j.key())
+                    #print(value['interestKey'])
+                    dict2={}
+                    if(j.key()==value['interestKey']):
+                        
+                        dict1=i.val()  
+                        dict2=j.val()  
+                        print("1:::::::",dict1) 
+                        print("2:::::::",dict2) 
+                        dict1.update(dict2)
+                        print("com:::::::",dict1)
+                        result.append(dict1)  
+
+                      
+
+    
+
+    return render(request, 'user/qualityChecker.html',{'data':result})
+
 
 def processor(request):
     data = database.child("user").child("Farmer").child('yields').get()
     temp = []
-    processorId = 'c1qWMfP0uZZt5vMNLHFOcLrzZwy1'
+    sess = request.session['uid']
+    processorId = sess
     for entry in data.each():
         dict = {'farmerKey':entry.key()}
+
         hey = entry.val()
         for key,values in hey.items():
             val = values
+            dict1={'farmerLotKey':key}
             val.update(dict)
+            val.update(dict1)
             temp.append(val)
     if request.method=='POST':
         print(request.POST)
@@ -67,12 +134,16 @@ def processor(request):
             print('accept hua')
             data = {
                 'farmerId': request.POST.get('farmerId'),
+                'farmerLotKey' :request.POST.get('farmerLotKey'),
                 'farmerKey': request.POST.get('farmerKey'),
                 'cropName': request.POST.get('cropName'),
                 'quantityRequested': request.POST.get('requiredQuantity'),
-                'quotedPrice': request.POST.get('quotedPrice')
+                'quotedPrice': request.POST.get('quotedPrice'),
+                'quality': "N"
             }
             database.child("user").child("Processor").child('interests').child(processorId).push(data)
+        
+
     return render(request, 'user/processor.html',{'data':temp})
 def singIn(request):
     # if method == 'POST':
@@ -91,43 +162,18 @@ def postsign(request):
 
     session_id = user['localId']
     request.session['uid']=str(session_id)
-    print(user)
+    #print(user)
     stake = request.POST['drop']
 
-    if stake=="Farmer":
-        users = database.child("user").child(stake).get()
-
-        for u in users.each():
-            if u.key()==session_id:
-                context= u.val()
-
-                return redirect("/farmer/")
-
-    if stake=="Farmer":
-        users = database.child("user").child(stake).get()
-
-        for u in users:
-            if u.key()==session_id:
-                context= u.val()
-
-                return render(request,"user/farmer.html",context)
-
-    if stake=="Farmer":
-        users = database.child("user").child(stake).get()
-
-        for u in users:
-            if u.key()==session_id:
-                context= u.val()
-
-                return render(request,"user/farmer.html",context)
+    
 
     users = database.child("user").child(stake).get()
 
-    for u in users:
+    for u in users.each():
         if u.key() == session_id:
             context = u.val()
     if stake=="Farmer":
-        return render(request,"user/farmer.html",context)
+        return redirect("/farmer/")
     if stake=="Customer":
         return render(request,"user/customer.html",context)
     if stake=="Logistics":
@@ -135,10 +181,9 @@ def postsign(request):
     if stake=="Retailer":
         return render(request,"user/retailer.html",context)
     if stake=="Processor":
-        return render(request,"user/processor.html",context)
+        return redirect("/processor/")
     if stake=="Quality Checker":
-        return render(request,"user/qualityChecker.html",context)
-
+        return redirect("/qualityChecker/")
 
 
 
