@@ -155,7 +155,15 @@ def processor(request):
             }
             database.child("user").child("Processor").child('products').child(processorId).push(product)
 
-    return render(request, 'user/processor.html',{'data':temp , 'lots' : lots} )
+    # display orders done with retailer
+    temp=database.child("user").child("Retailer").child('Confirmed Processor Orders').get()
+    RorderDetails=[]
+    for ret in temp.each():
+        y=ret.val()
+        for key,z in y.items():
+            if (z['processorKey']==request.session['uid']):
+                RorderDetails.append(z)
+    return render(request, 'user/processor.html',{'data':temp , 'lots' : lots,'orderDetails':RorderDetails} )
 
 def retailer(request):
     data = database.child("user").child("Processor").child('products').get()
@@ -187,8 +195,32 @@ def retailer(request):
             }
             processorKey = request.POST.get('processorKey')
             database.child("user").child("Retailer").child('Confirmed Processor Orders').child(retailerId).push(transaction)
-            # availableQuantity = database.child("user").child("Processor").child("products")
-    return render(request , 'user/retailer.html' , {'data' : productDetails})
+
+            # change the available quantity
+            
+            requiredQuantity=int(transaction['requiredQuantity'])
+            processorKey = transaction['processorKey']
+            productKey = transaction['productKey']
+            temp = database.child("user").child("Processor").child("products").child(processorKey).child(productKey).get()
+            
+            values=temp.val()
+            avqty=int(values['availableQuantity'])
+            avqty=avqty-requiredQuantity
+            print(avqty)
+                        
+            database.child("user").child("Processor").child("products").child(processorKey).child(productKey).update({"availableQuantity": avqty})
+
+    # display confirmed orders
+    temp=database.child("user").child("Retailer").child('Confirmed Processor Orders').child(retailerId).get()
+    orderDetails=[]
+    for x in temp.each():
+        z=x.val()
+        
+        orderDetails.append(z)
+
+
+        
+    return render(request , 'user/retailer.html' , {'data' : productDetails,'orderDetails':orderDetails})
 
 def signIn(request):
     return render(request, 'user/signIn.html')

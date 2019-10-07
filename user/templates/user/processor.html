@@ -81,6 +81,38 @@ input[type="submit"] {
   text-align:left;
   cursor:pointer;
 }
+
+  #box3 {
+  padding:5px;
+  width:200px;
+  z-index:10;
+  position:relative;
+}
+#box3 div {
+ background:#006699;
+ padding:5px;
+<!-- display:none;-->
+ position:absolute;
+ top:27px;
+}
+#button3 {
+  width:75px;
+  background:#006699;
+  color:#fff;
+  padding:3px 10px;
+  border:1px solid #006699;
+  margin-bottom:15px;
+  cursor:pointer;
+}
+hr {
+  margin-right: 0px;
+  margin-left: 0px;
+  clear:both;
+  display:block;
+  width: 96%;               
+  background-color:black;
+  height: 1px;
+}
 </style>
 <script>
     $(document).ready(function () {
@@ -96,10 +128,16 @@ input[type="submit"] {
             $("#box2 form").toggle("slow");
             return false;
         });
+        $("#button3").click(function() {
+            $("#box3 div").toggle("slow");
+            return false;
+        });
     });
 </script>
 <body>
 
+<h2>Farmer</h2>
+<hr>
 <div id="box">
      <span id="button">Broadcast</span>
     <form action="{% url 'processor' %}" method="POST" id="processorForm" name="processorForm">
@@ -154,7 +192,11 @@ input[type="submit"] {
         {% endfor %}
 
 </div>
-<br><br><br><br><br><br><br><br><br><br><br>
+<br>
+<br>
+<h2>Retailer</h2>
+<hr>
+
 <div id="box2">
      <span id="button2">Transactions</span>
     <form action="{% url 'farmer' %}" id="form2">
@@ -176,6 +218,31 @@ input[type="submit"] {
         </div>
     </form>
 </div>
+<br>
+<br>
+<br>
+<br>
+<div id="box3">
+        <span id="button3" style="margin-bottom: 10px">Order Details with Retailer</span>
+        
+          {% for x in orderDetails %}
+          
+            <div class="row" style="border: solid;">
+              
+                  Product Name: {{x.productName}}
+                  <br>
+                  Quantity: {{x.requiredQuantity}}
+                  
+                  <br>
+                  Price: {{x.Price}}
+                  <br>
+                  
+            
+            
+            </div>
 
-<!--</form>-->
+   
+        {% endfor %}
+
+    </div>
 </body>
