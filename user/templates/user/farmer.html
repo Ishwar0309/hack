@@ -1,236 +1,109 @@
-<head>
-	<!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>-->
-    <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-</head>
-<style type="text/css">
-    #box {
-  padding:5px;
-  width:200px;
-  z-index:10;
-  position:relative;
-}
-#box form {
- background:#006699;
- padding:5px;
- display:none;
- position:absolute;
- top:27px;
-}
-#button {
-  width:75px;
-  background:#006699;
-  color:#fff;
-  padding:3px 10px;
-  border:1px solid #006699;
-  margin-bottom:15px;
-  cursor:pointer;
-}
-    #box1 {
-  padding:5px;
-  width:200px;
-  z-index:10;
-  position:relative;
-}
-#box1 form {
- background:#006699;
- padding:5px;
- display:none;
- position:absolute;
- top:27px;
-}
-#button1 {
-  width:75px;
-  background:#006699;
-  color:#fff;
-  padding:3px 10px;
-  border:1px solid #006699;
-  margin-bottom:15px;
-  cursor:pointer;
-}
-   #box2 {
-  padding:5px;
-  width:200px;
-  z-index:10;
-  position:relative;
-}
-#box2 form {
- background:#006699;
- padding:5px;
- display:none;
- position:absolute;
- top:27px;
-}
-#button2 {
-  width:75px;
-  background:#006699;
-  color:#fff;
-  padding:3px 10px;
-  border:1px solid #006699;
-  margin-bottom:15px;
-  cursor:pointer;
-}
-input[type="submit"] {
-  background:none;
-  color:#fff;
-  border:none;
-  text-align:left;
-  cursor:pointer;
-}
 
-#box3 {
-  padding:5px;
-  width:200px;
-  z-index:10;
-  position:relative;
-}
-#box3 form {
- background:#006699;
- padding:5px;
- display:none;
- position:absolute;
- top:27px;
-}
-#button3 {
-  width:75px;
-  background:#006699;
-  color:#fff;
-  padding:3px 10px;
-  border:1px solid #006699;
-  margin-bottom:15px;
-  cursor:pointer;
-}
-</style>
-<script>
-    $(document).ready(function () {
-    	$("#button").click(function() {
-            $("#box form").toggle("slow");
-            return false;
-        });
-        $("#button1").click(function() {
-            $("#box1 form").toggle("slow");
-            return false;
-        });
-        $("#button2").click(function() {
-            $("#box2 form").toggle("slow");
-            return false;
-        });
-        $("#button3").click(function() {
-            $("#box3 form").toggle("slow");
-            return false;
-        });
-    });
-</script>
-<body>
-{{email}}
-<div id="box">
-     <span id="button">Broadcast</span>
-    <form action="{% url 'farmer' %}" method="POST" id="form" name="form">
-        {% csrf_token %}
-      <!--<p><input type="text" placeholder="username"/></p>-->
-      <!--<p><input type="password" placeholder="password" /></p>-->
-      <!--<p><input type="submit" value="Sign in" /></p>-->
-        <input type="text" name = "farmerId" placeholder="Farmer Id"/>
-        <input type="text" name = "cropName" placeholder="Crop Name"/>
-        <input type="text" name = "quantity" placeholder="Quantity"/>
-        <input type="text" name = "expectedPrice" placeholder="Expected Price"/>
-        <button type="submit" name="broadcast">Submit Details!!</button>
-    </form>
-</div>
-<br><br><br><br><br><br><br><br><br><br><br>
-<div id="box1">
-     <span id="button1">Requests</span>
-    <form action="{% url 'farmer' %}" id="form1">
-        {% for dat in data %}
-        <div class="card bg-success text-white">
-            <!--<p>Hey this is Request no 1</p>-->
-            <div class="card-body">
-                <p>{{dat.cropName}}</p>
-                <p>{{dat.farmerId}}</p>
-                <p>{{dat.quantity}}</p>
-                <p>{{dat.expectedPrice}}</p>
 
-    	      <button type="submit" class="btn btn-warning" >Accept</button>
-    	      <button type="submit" class="btn btn-warning" >Deny</button>
+{% extends "user/base.html" %}
+
+{% block content %}
+
+<div class="container" style="height:700px;width:90%;margin-top:100px;margin-left:auto;margin-right:auto;background: rgba(255, 255, 255, 0.4);">
+  <br><br><br><br>
+
+
+
+
+    <div class="row" style="display: block;text-align: center;">
+
+      
+      <h3><span ><a id="1" class="show" style="border-left: solid;border-right: solid;cursor: pointer;"> Broadcast </a></span>
+      <span><a id="2" class="show" style="border-right: solid;cursor: pointer;"> Farmer Broadcasts </a></span>
+      <span><a id="3" class="show" style="border-right: solid;cursor: pointer;"> Processor Requests </a></span>
+      <span><a id="4" class="show" style="border-right: solid;cursor: pointer;"> Transactions </a></span></h3>
+      
+    </div>
+    <div class="content-wrapper">
+
+      <div id="item-0" style="text-align: center;margin-top: 50px;">  
+        what 
+      </div>
+
+
+        <div id="item-1" style="text-align: center;margin-top: 50px;">           
+          <form action="{% url 'farmer' %}" method="POST" id="form" name="form">
+            {% csrf_token %}
+          <!--<p><input type="text" placeholder="username"/></p>-->
+          <!--<p><input type="password" placeholder="password" /></p>-->
+          <!--<p><input type="submit" value="Sign in" /></p>-->
+              <input type="text" name = "farmerId" placeholder="Farmer Id" style="margin-top: 10px;border-radius: 25px;width:375px"/><br>
+              <input type="text" name = "cropName" placeholder="Crop Name" style="margin-top: 10px;border-radius: 25px;width:375px""/><br>
+              <input type="text" name = "quantity" placeholder="Quantity" style="margin-top: 10px;border-radius: 25px;width:375px""/><br>
+              <input type="text" name = "expectedPrice" placeholder="Expected Price" style="margin-top: 10px;border-radius: 25px;width:375px""/><br>
+              <button type="submit" name="broadcast" style="margin-top: 10px;border-radius: 25px;width:200px">Submit Details!!</button>
+          </form>
+        </div>   
+        <div class="container" id="item-2" style="text-align: center;margin-top: 50px" >
+          <div class="row example-1 scrollbar-deep-purple scrollbar-light-blue "   >    
+            {% for dat in data %}
+              <div class="col-md-4" style="margin-top: 10px">
+                <div class="card " >
+                          <div class="card-block" >
+                            <h5><p class="card-text"><u>Crop Name:</u> {{dat.cropName}}</p>
+                            <p class="card-text"><u>Farmer Id:</u> {{dat.farmerId}}</p>
+                            <p class="card-text"><u>Quantity :</u> {{dat.quantity}}</p>
+                            <p class="card-text"><u>Expected Price :</u>{{dat.expectedPrice}}</p></h5>
+                          </div>
+
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+                           
+        </div> 
+
+
+
+        <div class="container" id="item-3" style="text-align: center;margin-top: 50px">
+          <div class="row example-1 scrollbar-deep-purple scrollbar-light-blue "  >    
+          
+
+            {% for dat in results %}
+            <div class="col-md-4" style="margin-top: 10px">
+              <div class="card  ">
+                  <!--<p>Hey this is Request no 1</p>-->
+                  <form action="{% url 'farmer' %}" method="POST">
+                      {% csrf_token %}
+                      <div class="card-block">
+
+                          <h6><p class="card-text">Crop Name:{{dat.cropName}}</p>
+                          <p class="card-text">ProcessorKey:{{dat.processorKey}}</p>
+                          <p class="card-text">Requested Quantity:{{dat.quantityRequested}}</p>
+                          <p class="card-text">Quoted Price:{{dat.quotedPrice}}</p></h6>
+
+
+                          <input type="hidden" name="cropName" value="{{dat.cropName}}">
+                          <input type="hidden" name="farmerKey" value="{{dat.farmerKey}}">
+                          <input type="hidden" name="farmerId" value="{{dat.farmerId}}">
+                          <input type="hidden" name="quantity" value="{{dat.quantity}}">
+                          <input type="hidden" name="expectedPrice" value="{{dat.expectedPrice}}">
+                          <input type="hidden" name="processorKey" value="{{dat.processorKey}}">
+                          <input type="hidden" name="selfKey" value="{{dat.selfKey}}">
+                      <button type="submit" name="insurance" value="insurance" class="btn btn-warning" >Send To Insure</button>
+                      <!--<button type="submit" name="acceptButton" value="accept" class="btn btn-warning" >Accept</button>-->
+                          <!--<a href="{% url 'processor' %}" class="btn btn-primary stretched-link">Accept</a>-->
+                      <!--<button type="submit" name="rejectButton" value="reject" class="btn btn-warning" >Deny</button>-->
+                      </div>
+                  </form>
+              </div>
             </div>
+            {% endfor %}
+          </div>
         </div>
-        {% endfor %}
-    </form>
+
+        <div id="item-4">
+          Payments
+        </div>
+
+
+
+    </div>
 </div>
-<br><br><br><br><br><br><br><br><br><br><br>
-<div id="box2">
-     <span id="button2">Transactions</span>
-    <form action="{% url 'farmer' %}" id="form2">
-        <div class="card bg-success text-white">
-            <!--<p>Hey this is transaction no 1</p>-->
-            <div class="card-body">
-                <p>Hey this is transaction no 1</p>
-    	      <!--<button type="submit" class="btn btn-warning" >Accept</button>-->
-    	      <!--<button type="submit" class="btn btn-warning" >Deny</button>-->
-            </div>
-        </div>
-        <div class="card bg-success text-white">
-            <!--<p>Hey this is transaction no 2</p>-->
-            <div class="card-body">
-                <p>Hey this is transaction no 2</p>
-    	      <!--<button type="submit" class="btn btn-warning" >Accept</button>-->
-    	      <!--<button type="submit" class="btn btn-warning" >Deny</button>-->
-            </div>
-        </div>
-    </form>
-</div>
+{% endblock content %}
 
-<div id="box3">
-     <span id="button3">Accepted Results</span>
-    <form action="{% url 'farmer' %}" id="form3">
-        <div class="card bg-success text-white">
-            <!--<p>Hey this is transaction no 1</p>-->
-            <div class="card-body">
-                <p>Hey this is transaction no 1</p>
-    	      <!--<button type="submit" class="btn btn-warning" >Accept</button>-->
-    	      <!--<button type="submit" class="btn btn-warning" >Deny</button>-->
-            </div>
-        </div>
-    </form>
-</div>
-
-<div>
-     <span id="button4">Accepted Results</span>
-
-        {% csrf_token %}
-
-        {% for dat in results %}
-        <div class="card bg-success text-white">
-            <!--<p>Hey this is Request no 1</p>-->
-            <form action="{% url 'farmer' %}" method="POST">
-                {% csrf_token %}
-            <div class="card-body">
-
-                Crop Name:<p>{{dat.cropName}}</p>
-                Processor Key:<p>{{dat.processorKey}}</p>
-                Requested Quantity:<p>{{dat.quantityRequested}}</p>
-                Quoted Price:<p>{{dat.quotedPrice}}</p>
-
-
-                <input type="hidden" name="cropName" value="{{dat.cropName}}">
-                <input type="hidden" name="farmerKey" value="{{dat.farmerKey}}">
-                <input type="hidden" name="farmerId" value="{{dat.farmerId}}">
-                <input type="hidden" name="quantity" value="{{dat.quantity}}">
-                <input type="hidden" name="expectedPrice" value="{{dat.expectedPrice}}">
-                <input type="hidden" name="processorKey" value="{{dat.processorKey}}">
-                <input type="hidden" name="selfKey" value="{{dat.selfKey}}">
-    	      <button type="submit" name="insurance" value="insurance" class="btn btn-warning" >Send To Insure</button>
-    	      <!--<button type="submit" name="acceptButton" value="accept" class="btn btn-warning" >Accept</button>-->
-                <!--<a href="{% url 'processor' %}" class="btn btn-primary stretched-link">Accept</a>-->
-    	      <!--<button type="submit" name="rejectButton" value="reject" class="btn btn-warning" >Deny</button>-->
-            </div>
-                </form>
-        </div>
-        {% endfor %}
-
-</div>
-</body>

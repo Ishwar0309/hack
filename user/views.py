@@ -166,22 +166,18 @@ def processor(request):
     return render(request, 'user/processor.html',{'data':temp , 'lots' : lots,'orderDetails':RorderDetails} )
 
 def retailer(request):
-    data = database.child("user").child("Processor").child('products').get()
+    
     productDetails = []
     retailerId = request.session['uid']
-    for entry in data.each():
-        processor = {'processorKey': entry.key()}
-        product = entry.val()
-        for key,value in product.items():
-            dict = {"productKey" : key}
-            details = value
-            details.update(dict)
-            details.update(processor)
-            productDetails.append(details)
-    print(productDetails)
-
+    
     if request.method == "POST":
         if "accept" in request.POST:
+            checkData = database.child("user").child("Processor").child('products').child(request.POST.get('processorKey')).child(request.POST.get('productKey')).get()
+            print('fghjkhgkhlkhlkjhlkjhlkjhhkkjkbknm')
+            print(checkData.val()['availableQuantity'])
+            if checkData.val()['availableQuantity'] < int(request.POST.get('requiredQuantity')):
+                print("inside if ")
+                return redirect('/retailer/')
             transaction = {
                 # 'lotKey': request.POST.get('lotKey'),
                 'productName': request.POST.get('productName'),
@@ -209,6 +205,20 @@ def retailer(request):
             print(avqty)
                         
             database.child("user").child("Processor").child("products").child(processorKey).child(productKey).update({"availableQuantity": avqty})
+    data = database.child("user").child("Processor").child('products').get()
+    for entry in data.each():
+        processor = {'processorKey': entry.key()}
+        product = entry.val()
+        
+        for key,value in product.items():
+            dict = {"productKey" : key}
+            details = value
+            details.update(dict)
+            details.update(processor)
+            if value['availableQuantity'] <= 0:
+                continue
+            productDetails.append(details)
+    print(productDetails)
 
     # display confirmed orders
     temp=database.child("user").child("Retailer").child('Confirmed Processor Orders').child(retailerId).get()
